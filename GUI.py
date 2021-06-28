@@ -5,7 +5,7 @@ from tkinter.filedialog import *
 from tkinter.tix import *
 from knowledge import generate_dishes
 from formulas import BasalMetabolicRate
-
+from formulas import pesoIdeal
 
 #GUI
 root = Tk()
@@ -25,6 +25,12 @@ azucar = StringVar(value = "Si")
 
 
 def recomendar():
+
+    newWindow = Toplevel(root)
+    newWindow.title("Plan de dietas personalizado")
+    newWindow.geometry("650x680")
+    newWindow.config(bg = "grey19")
+
     nombreG = nombre.get()
     sexoG = sexo.get()
     edadG = edad.get()
@@ -48,19 +54,31 @@ def recomendar():
         messagebox.showwarning(message="Debe ingresar un peso correcto.", title="Información incorrecta")
         return   
 
+    #"1 vez por semana", "2-3 veces por semana", "3-5 veces por semana", "Ejercicio diario"
     #calcular el tmb
     TMB = BasalMetabolicRate(sexoG, pesoG, alturaG, edadG)
+    peso_ideal = pesoIdeal(sexoG, pesoG, alturaG, edadG)
+    
+
+    if (actividad_fisicaG == "1 vez por semana"):
+        TMB = TMB * 1
+    elif (actividad_fisicaG == "2-3 veces por semana"):
+        TMB = TMB * 1.2
+    elif (actividad_fisicaG == "3-5 veces por semana"):
+        TMB = TMB * 1.35
+    elif (actividad_fisicaG == "Ejercicio diario"):
+        TMB = TMB * 1.50
     print("TMB: ", TMB)
     days = 5
     dishes = generate_dishes(days, TMB)   
     print("Dishes", dishes)
 
-    newWindow = Toplevel(root)
-    newWindow.title("Plan de dietas personalizado")
-    newWindow.geometry("600x320")
-    newWindow.config(bg = "grey19")
     textNombre = "Bienvenido, " + nombreG
     textCalorias = "Tu plan de dieta le permite consumir " + str(TMB) + " por día"
+    if peso_ideal > 0:
+        textPesoIdeal = "Utilizando este plan de dietas usted logrará bajar esos " + str(round(peso_ideal, 2)) + " kilos de más."
+    else:
+        textPesoIdeal = "Actualmente usted dentro de su peso ideal."
 
     textTotalCaloriasL = "Calorias: " + str(dishes[0][1])
     textTotalCaloriasMA = "Calorias: " + str(dishes[1][1])
@@ -85,48 +103,51 @@ def recomendar():
     mensLunesCA.place(x = 30, y = 230)
 
     mensMartes = Label(newWindow, text = "Martes", font = ("white", 10), bg = "grey19", fg = "white")
-    mensMartes.place(x = 150, y = 110)
+    mensMartes.place(x = 330, y = 110)
     mensMartesD = Label(newWindow, text = dishes[1][0][0], font = ("white", 10), bg = "grey19", fg = "white")
-    mensMartesD.place(x = 150, y = 140)
+    mensMartesD.place(x = 330, y = 140)
     mensMartesA = Label(newWindow, text = dishes[1][0][1], font = ("white", 10), bg = "grey19", fg = "white")
-    mensMartesA.place(x = 150, y = 170)
+    mensMartesA.place(x = 330, y = 170)
     mensMartesC = Label(newWindow, text = dishes[1][0][2], font = ("white", 10), bg = "grey19", fg = "white")
-    mensMartesC.place(x = 150, y = 200)
+    mensMartesC.place(x = 330, y = 200)
     mensMartesCA = Label(newWindow, text = textTotalCaloriasMA, font = ("white", 10), bg = "grey19", fg = "white")
-    mensMartesCA.place(x = 150, y = 230)
+    mensMartesCA.place(x = 330, y = 230)
 
     mensMiercoles = Label(newWindow, text = "Miércoles", font = ("white", 10), bg = "grey19", fg = "white")
-    mensMiercoles.place(x = 270, y = 110)
+    mensMiercoles.place(x = 30, y = 290)
     mensMiercolesD = Label(newWindow, text = dishes[2][0][0], font = ("white", 10), bg = "grey19", fg = "white")
-    mensMiercolesD.place(x = 270, y = 140)
+    mensMiercolesD.place(x = 30, y = 320)
     mensMiercolesA = Label(newWindow, text = dishes[2][0][1], font = ("white", 10), bg = "grey19", fg = "white")
-    mensMiercolesA.place(x = 270, y = 170)
+    mensMiercolesA.place(x = 30, y = 350)
     mensMiercolesC = Label(newWindow, text = dishes[2][0][2], font = ("white", 10), bg = "grey19", fg = "white")
-    mensMiercolesC.place(x = 270, y = 200)
+    mensMiercolesC.place(x = 30, y = 380)
     mensMiercolesCA = Label(newWindow, text = textTotalCaloriasMI, font = ("white", 10), bg = "grey19", fg = "white")
-    mensMiercolesCA.place(x = 270, y = 230)
+    mensMiercolesCA.place(x = 30, y = 410)
 
     mensJueves = Label(newWindow, text = "Jueves", font = ("white", 10), bg = "grey19", fg = "white")
-    mensJueves.place(x = 390, y = 110)
+    mensJueves.place(x = 330, y = 290)
     mensJuevesD = Label(newWindow, text = dishes[3][0][0], font = ("white", 10), bg = "grey19", fg = "white")
-    mensJuevesD.place(x = 390, y = 140)
+    mensJuevesD.place(x = 330, y = 320)
     mensJuevesA = Label(newWindow, text = dishes[3][0][1], font = ("white", 10), bg = "grey19", fg = "white")
-    mensJuevesA.place(x = 390, y = 170)
+    mensJuevesA.place(x = 330, y = 350)
     mensJuevesC = Label(newWindow, text = dishes[3][0][2], font = ("white", 10), bg = "grey19", fg = "white")
-    mensJuevesC.place(x = 390, y = 200)
+    mensJuevesC.place(x = 330, y = 380)
     mensJuevesCA = Label(newWindow, text = textTotalCaloriasJ, font = ("white", 10), bg = "grey19", fg = "white")
-    mensJuevesCA.place(x = 390, y = 230)
+    mensJuevesCA.place(x = 330, y = 410)
 
     mensViernes = Label(newWindow, text = "Viernes", font = ("white", 10), bg = "grey19", fg = "white")
-    mensViernes.place(x = 510, y = 110)
+    mensViernes.place(x = 30, y = 480)
     mensViernesD = Label(newWindow, text = dishes[4][0][0], font = ("white", 10), bg = "grey19", fg = "white")
-    mensViernesD.place(x = 510, y = 140)
+    mensViernesD.place(x = 30, y = 510)
     mensViernesA = Label(newWindow, text = dishes[4][0][1], font = ("white", 10), bg = "grey19", fg = "white")
-    mensViernesA.place(x = 510, y = 170)
+    mensViernesA.place(x = 30, y = 540)
     mensViernesC = Label(newWindow, text = dishes[4][0][2], font = ("white", 10), bg = "grey19", fg = "white")
-    mensViernesC.place(x = 510, y = 200)
+    mensViernesC.place(x = 30, y = 570)
     mensViernesCA = Label(newWindow, text = textTotalCaloriasV, font = ("white", 10), bg = "grey19", fg = "white")
-    mensViernesCA.place(x = 510, y = 230)
+    mensViernesCA.place(x = 30, y = 600)
+
+    mensPesoIdeal = Label(newWindow, text = textPesoIdeal, font = ("white", 12), bg = "grey19", fg = "white")
+    mensPesoIdeal.place(x = 30, y = 630)
     
 mensTitulo = Label(root, text="Dieta Personalizada", font = ("white", 30), bg = "grey19", fg="white")
 mensTitulo.place(x=30, y=10)

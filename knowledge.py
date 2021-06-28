@@ -1,7 +1,7 @@
 from kanren import *
 import pandas as pd
 
-dataset_url = 'https://raw.githubusercontent.com/zaj-e/lobueno/master/foods.csv'
+dataset_url = 'https://raw.githubusercontent.com/Sentra/lobueno/master/foods.csv'
 data = pd.read_csv(dataset_url, error_bad_lines=False)
 
 meals = data['Food'].values
