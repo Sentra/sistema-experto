@@ -1,3 +1,5 @@
+import random
+
 from kanren import *
 import pandas as pd
 
@@ -31,14 +33,16 @@ def three_meals_fit_requirements(breakfast, food_calories_breakfast, lunch, food
 
 def generate_dishes(number_of_dishes, BMR):
     breakfast_option, breakfast_calories, lunch_option, lunch_calories, dinner_options, dinner_calories = vars(6)
-    solutions = run(100, [[breakfast_option, breakfast_calories], [lunch_option, lunch_calories],
+    solutions = run(1000, [[breakfast_option, breakfast_calories], [lunch_option, lunch_calories],
                         [dinner_options, dinner_calories]],
                     (three_meals_fit_requirements(breakfast_option, breakfast_calories, lunch_option, lunch_calories,
                                                   dinner_options, dinner_calories)))
 
+    solutions_list = [item for item in solutions]
+    random.shuffle(solutions_list)
     counter = 0
     solutions_matching_bmr = []
-    for solution in solutions:
+    for solution in solutions_list:
         if counter == number_of_dishes:
             break
         breakfast = int(solution[0][1])
