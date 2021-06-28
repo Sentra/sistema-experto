@@ -16,27 +16,39 @@ for i in range(len(meals)):
     fact(dish_category, meals[i], categories[i])
 
 
-def three_meals_fit_requirements(breakfast, food_calories_breakfast, lunch, food_calories_lunch):
+def three_meals_fit_requirements(breakfast, food_calories_breakfast, lunch, food_calories_lunch, dinner,
+                                 food_calories_dinner):
     result = conde((
         dish_category(breakfast, "Breakfast"),
-        dish_category(lunch, "FullMeal"),
+        dish_category(lunch, "Lunch"),
+        dish_category(dinner, "Dinner"),
         dish_calories(breakfast, food_calories_breakfast),
-        dish_calories(lunch, food_calories_lunch),)
+        dish_calories(lunch, food_calories_lunch),
+        dish_calories(dinner, food_calories_dinner))
     )
     return result
 
 
 def generate_dishes(number_of_dishes, BMR):
-    breakfast_option, breakfast_calories, lunch_option, lunch_calories = vars(4)
-    solutions = run(number_of_dishes, [[breakfast_option, breakfast_calories], [lunch_option, lunch_calories]],
-                    (three_meals_fit_requirements(breakfast_option, breakfast_calories, lunch_option, lunch_calories)))
+    breakfast_option, breakfast_calories, lunch_option, lunch_calories, dinner_options, dinner_calories = vars(6)
+    solutions = run(100, [[breakfast_option, breakfast_calories], [lunch_option, lunch_calories],
+                        [dinner_options, dinner_calories]],
+                    (three_meals_fit_requirements(breakfast_option, breakfast_calories, lunch_option, lunch_calories,
+                                                  dinner_options, dinner_calories)))
 
-    solutions_matching_bmi = [([solution[0][0], solution[1][0], solution[1][0]], total_calories)
-                              for solution in solutions if
-                              (total_calories := int(solution[0][1]) + (2 * int(solution[1][1]))) < BMR and (total_calories > BMR - 400)]
+    counter = 0
+    solutions_matching_bmr = []
+    for solution in solutions:
+        if counter == number_of_dishes:
+            break
+        breakfast = int(solution[0][1])
+        lunch = int(solution[1][1])
+        dinner = int(solution[2][1])
+        minimum = BMR - 400
+        total_calories = breakfast + lunch + dinner
+        if total_calories < BMR and (total_calories > minimum):
+            new_solution = ([solution[0][0], solution[1][0], solution[2][0]], total_calories)
+            solutions_matching_bmr.append(new_solution)
+            counter += 1
 
-    if len(solutions_matching_bmi) < number_of_dishes:
-        redundant_solution = [solutions_matching_bmi[0] for _ in range(number_of_dishes)]
-        return redundant_solution
-
-    return solutions_matching_bmi
+    return solutions_matching_bmr
